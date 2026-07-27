@@ -30,10 +30,13 @@
   <!-- Fichier audio -->
   <audio id="klaxon" src="camion.mp3" preload="auto"></audio>
 
-  <script>
-    // Joue le son au tout premier clic sur la page/image
+ <script>
+    // Joue le son à CHAQUE clic sur la page/image
     document.addEventListener('click', function() {
       const audio = document.getElementById('klaxon');
+      
+      // Remet le son à zéro avant de le jouer (pour qu'il redémarre instantanément)
+      audio.currentTime = 0;
       audio.play();
 
       // Arrête le son automatiquement après 2 secondes (2000 ms)
@@ -41,7 +44,7 @@
         audio.pause();
         audio.currentTime = 0;
       }, 2000);
-    }, { once: true });
+    }); // La partie "{ once: true }" a été supprimée
   </script>
 
 </body>
