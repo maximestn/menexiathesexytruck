@@ -17,38 +17,104 @@
       overflow: hidden;
     }
 
-    img {
+    /* Le conteneur qui gère le zoom d'ensemble (effet optique) */
+    .conteneur-camion {
+      position: relative;
+      display: inline-block;
+      transition: transform 0.3s ease-out; /* Effet de zoom fluide */
+      will-change: transform;
+    }
+
+    /* L'image de base */
+    .image-base {
       max-width: 100%;
       height: auto;
       display: block;
-      transition: transform 0.2s ease;
     }
 
-    /* Effet au survol de la souris */
-    img:hover {
-      transform: scale(1.03);
+    /* --- EFFET 1 : ZOOM OPTIQUE AU CLIC --- */
+    /* Classe ajoutée par JS au clic pour zoomer l'ensemble */
+    .zoom-clic {
+      transform: scale(1.2) translateY(-20px); /* Zoom + légère montée */
     }
 
-    /* Animation de secousse / vibration */
-    @keyframes secousse {
-      0% { transform: scale(1.03) translate(0, 0) rotate(0deg); }
-      20% { transform: scale(1.03) translate(-3px, 3px) rotate(-1deg); }
-      40% { transform: scale(1.03) translate(-3px, -3px) rotate(1deg); }
-      60% { transform: scale(1.03) translate(3px, 3px) rotate(0deg); }
-      80% { transform: scale(1.03) translate(3px, -3px) rotate(1deg); }
-      100% { transform: scale(1.03) translate(0, 0) rotate(-1deg); }
+    /* --- EFFET 2 : LA BOUCHE QUI S'OUVRE --- */
+    .bouche-conteneur {
+      position: absolute;
+      /* AJUSTE CES VALEURS pour positionner sur la bouche */
+      bottom: 15%; /* Hauteur depuis le bas (en %) */
+      left: 50%;   /* Position horizontale centré (en %) */
+      transform: translateX(-50%);
+      width: 80px;  /* Largeur de la bouche */
+      height: 40px; /* Hauteur de la bouche */
+      overflow: hidden; /* Pour cacher l'intérieur au début */
     }
 
-    /* Classe activée lors du clic */
-    .vibre {
-      animation: secousse 0.1s infinite;
+    .bouche {
+      width: 100%;
+      height: 100%;
+      background-color: #400; /* Couleur intérieure sombre */
+      border: 3px solid #000;
+      border-radius: 50% / 100% 100% 0 0; /* Forme de sourire */
+      transition: transform 0.2s ease-out;
+      transform: scaleY(0); /* Bouche fermée par défaut */
+      transform-origin: top; /* Ouvre vers le bas */
     }
+
+    /* Classe ajoutée par JS au clic pour ouvrir la bouche */
+    .bouche-ouverte {
+      transform: scaleY(1); /* Ouvre la bouche */
+    }
+
+    /* --- EFFET 3 : LES YEUX PHARES --- */
+    .oeil {
+      position: absolute;
+      width: 25px; /* Taille des yeux */
+      height: 25px;
+      border-radius: 50%;
+      /* Cacher l'effet lumineux par défaut */
+      box-shadow: 0 0 0px #fff;
+      opacity: 0;
+      transition: opacity 0.1s ease-in, box-shadow 0.2s ease-out;
+    }
+
+    /* AJUSTE CES VALEURS pour les yeux */
+    #oeil-gauche {
+      top: 35%; /* Hauteur depuis le haut (en %) */
+      left: 30%; /* Position horizontale gauche (en %) */
+    }
+
+    #oeil-droit {
+      top: 35%; /* Hauteur depuis le haut (en %) */
+      right: 30%; /* Position horizontale droite (en %) */
+    }
+
+    /* Classe ajoutée par JS au clic pour illuminer */
+    .phare-actif {
+      opacity: 1;
+      /* Effet lumineux Intense (Halo) */
+      box-shadow: 0 0 40px 15px #fff, 0 0 70px 30px #ff0; 
+    }
+
   </style>
 </head>
 <body>
 
-  <!-- Image de la blague -->
-  <img id="imageBlague" src="mablague.jpg" alt="Blague Camion"> <!-- CORRECTION -->
+  <!-- Conteneur qui englobe tout pour l'effet de zoom -->
+  <div class="conteneur-camion" id="monCamion">
+    
+    <!-- Image de la blague (de base) -->
+    <img src="mablague.jpg" alt="Blague Camion" class="image-base">
+    
+    <!-- Éléments superposés (Bouche et Yeux) -->
+    <div class="bouche-conteneur">
+      <div class="bouche" id="maBouche"></div>
+    </div>
+    
+    <div class="oeil" id="oeil-gauche"></div>
+    <div class="oeil" id="oeil-droit"></div>
+
+  </div>
 
   <!-- Fichier audio -->
   <audio id="klaxon" src="camion.mp3" preload="auto"></audio>
@@ -58,25 +124,44 @@
 
     document.addEventListener('click', function() {
       const audio = document.getElementById('klaxon');
-      const img = document.getElementById('imageBlague');
+      const camionConteneur = document.getElementById('monCamion');
+      const bouche = document.getElementById('maBouche');
+      const oeilG = document.getElementById('oeil-gauche');
+      const oeilD = document.getElementById('oeil-droit');
 
       // Recommence le chrono s'il y en avait déjà un
       if (timer) {
         clearTimeout(timer);
+        // Retirer les classes pour le reset au re-clic immédiat
+        camionConteneur.classList.remove('zoom-clic');
+        bouche.classList.remove('bouche-ouverte');
+        oeilG.classList.remove('phare-actif');
+        oeilD.classList.remove('phare-actif');
       }
 
       // Lance le son
       audio.currentTime = 0;
       audio.play();
 
-      // Ajoute l'effet de vibration
-      img.classList.add('vibre');
+      // AJOUTE LES EFFETS d'ANIMATION
+      // Forcer un petit délai pour permettre au navigateur de 'reset' les classes
+      setTimeout(() => {
+          camionConteneur.classList.add('zoom-clic'); // Zoom
+          bouche.classList.add('bouche-ouverte'); // Bouche
+          oeilG.classList.add('phare-actif');     // Oeil Gauche
+          oeilD.classList.add('phare-actif');     // Oeil Droit
+      }, 10);
 
-      // Arrête le son et la vibration après 2 secondes
+      // ARRÊTE TOUT après 2 secondes (fin du klaxon)
       timer = setTimeout(() => {
         audio.pause();
         audio.currentTime = 0;
-        img.classList.remove('vibre');
+        
+        // Retire les effets
+        camionConteneur.classList.remove('zoom-clic');
+        bouche.classList.remove('bouche-ouverte');
+        oeilG.classList.remove('phare-actif');
+        oeilD.classList.remove('phare-actif');
       }, 2000);
     });
   </script>
