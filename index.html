@@ -17,11 +17,12 @@
       overflow: hidden;
     }
 
-    /* Conteneur global */
+    /* Conteneur global avec ratio verrouillé */
     .conteneur-camion {
       position: relative;
       display: inline-block;
-      max-width: 100%;
+      width: 100%;
+      max-width: 900px; /* Taille max sur écran PC */
       transition: transform 0.2s ease-out;
       will-change: transform;
     }
@@ -29,15 +30,14 @@
     /* L'image de base */
     .image-base {
       width: 100%;
-      max-width: 100vw;
       height: auto;
       display: block;
       transition: transform 0.2s ease;
     }
 
-    /* Effet survol */
+    /* Effet survol sur PC */
     .conteneur-camion:hover .image-base {
-      transform: scale(1.03);
+      transform: scale(1.02);
     }
 
     /* --- ANIMATION : SECOUSSE + ZOOM --- */
@@ -57,17 +57,15 @@
     /* --- LES PHARES / YEUX --- */
     .oeil {
       position: absolute;
-      width: 4vw;
-      height: 4vw;
-      max-width: 25px;
-      max-height: 25px;
+      width: 3.5%;  /* Taille basée sur la largeur de l'image (identique PC/Mobile) */
+      padding-bottom: 3.5%; /* Garde une forme parfaitement ronde */
       border-radius: 50%;
       opacity: 0;
       transition: opacity 0.1s ease-in, box-shadow 0.2s ease-out;
       transform: translate(-50%, -50%);
     }
 
-    /* Positions des phares */
+    /* Positions relatives universelles */
     #oeil-gauche {
       top: 37%;
       left: 29%;
