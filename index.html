@@ -1,45 +1,48 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Site</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: #0f172a; /* Couleur de fond sombre (personnalisable) */
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden; /* Évite les barres de défilement inutilement */
-        }
-
-        .joke-image {
-            max-width: 90vw;   /* L'image ne dépassera pas 90% de la largeur de l'écran */
-            max-height: 90vh;  /* L'image ne dépassera pas 90% de la hauteur de l'écran */
-            object-fit: contain;
-            border-radius: 12px; /* Coins légèrement arrondis */
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); /* Petite ombre sympa */
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        /* Petit effet au survol de la souris */
-        .joke-image:hover {
-            transform: scale(1.02);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menexia The Sexy Truck</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      cursor: pointer;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Remplacez "image.jpg" par le nom ou le lien de votre image -->
-    <img src="mablague.jpg" alt="Blague" class="joke-image">
+  <!-- Image de la blague -->
+  <img src="mablague.jpg" alt="Blague Camion">
+
+  <!-- Fichier audio -->
+  <audio id="klaxon" src="camion.mp3" preload="auto"></audio>
+
+  <script>
+    // Joue le son au tout premier clic sur la page/image
+    document.addEventListener('click', function() {
+      const audio = document.getElementById('klaxon');
+      audio.play();
+
+      // Arrête le son automatiquement après 2 secondes (2000 ms)
+      setTimeout(() => {
+        audio.pause();
+        audio.currentTime = 0;
+      }, 2000);
+    }, { once: true });
+  </script>
 
 </body>
 </html>
