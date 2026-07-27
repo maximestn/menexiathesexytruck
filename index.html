@@ -17,11 +17,11 @@
       overflow: hidden;
     }
 
-    /* Le conteneur qui gère le zoom d'ensemble (effet optique) */
+    /* Le conteneur global */
     .conteneur-camion {
       position: relative;
       display: inline-block;
-      transition: transform 0.3s ease-out; /* Effet de zoom fluide */
+      transition: transform 0.2s ease-out;
       will-change: transform;
     }
 
@@ -30,93 +30,95 @@
       max-width: 100%;
       height: auto;
       display: block;
+      transition: transform 0.2s ease;
     }
 
-    /* --- EFFET 1 : ZOOM OPTIQUE AU CLIC --- */
-    /* Classe ajoutée par JS au clic pour zoomer l'ensemble */
-    .zoom-clic {
-      transform: scale(1.2) translateY(-20px); /* Zoom + légère montée */
+    /* Effet survol de la souris */
+    .conteneur-camion:hover .image-base {
+      transform: scale(1.03);
     }
 
-    /* --- EFFET 2 : LA BOUCHE QUI S'OUVRE --- */
+    /* --- ANIMATION : SECOUSSE + ZOOM --- */
+    @keyframes secousseEtZoom {
+      0% { transform: scale(1.2) translate(0, 0) rotate(0deg); }
+      20% { transform: scale(1.2) translate(-4px, 4px) rotate(-1deg); }
+      40% { transform: scale(1.2) translate(-4px, -4px) rotate(1deg); }
+      60% { transform: scale(1.2) translate(4px, 4px) rotate(0deg); }
+      80% { transform: scale(1.2) translate(4px, -4px) rotate(1deg); }
+      100% { transform: scale(1.2) translate(0, 0) rotate(-1deg); }
+    }
+
+    /* Actif lors du clic */
+    .action-clic {
+      animation: secousseEtZoom 0.1s infinite !important;
+    }
+
+    /* --- LA BOUCHE --- */
     .bouche-conteneur {
       position: absolute;
-      /* AJUSTE CES VALEURS pour positionner sur la bouche */
-      bottom: 15%; /* Hauteur depuis le bas (en %) */
-      left: 50%;   /* Position horizontale centré (en %) */
+      bottom: 15%; /* À ajuster si besoin */
+      left: 50%;
       transform: translateX(-50%);
-      width: 80px;  /* Largeur de la bouche */
-      height: 40px; /* Hauteur de la bouche */
-      overflow: hidden; /* Pour cacher l'intérieur au début */
+      width: 80px;
+      height: 40px;
+      overflow: hidden;
     }
 
     .bouche {
       width: 100%;
       height: 100%;
-      background-color: #400; /* Couleur intérieure sombre */
+      background-color: #400;
       border: 3px solid #000;
-      border-radius: 50% / 100% 100% 0 0; /* Forme de sourire */
-      transition: transform 0.2s ease-out;
-      transform: scaleY(0); /* Bouche fermée par défaut */
-      transform-origin: top; /* Ouvre vers le bas */
+      border-radius: 50% / 100% 100% 0 0;
+      transition: transform 0.15s ease-out;
+      transform: scaleY(0);
+      transform-origin: top;
     }
 
-    /* Classe ajoutée par JS au clic pour ouvrir la bouche */
     .bouche-ouverte {
-      transform: scaleY(1); /* Ouvre la bouche */
+      transform: scaleY(1);
     }
 
-    /* --- EFFET 3 : LES YEUX PHARES --- */
+    /* --- LES PHARES / YEUX --- */
     .oeil {
       position: absolute;
-      width: 25px; /* Taille des yeux */
+      width: 25px;
       height: 25px;
       border-radius: 50%;
-      /* Cacher l'effet lumineux par défaut */
-      box-shadow: 0 0 0px #fff;
       opacity: 0;
       transition: opacity 0.1s ease-in, box-shadow 0.2s ease-out;
     }
 
-    /* AJUSTE CES VALEURS pour les yeux */
+    /* Coordonnées ajustées */
     #oeil-gauche {
-      top: 35%; /* Hauteur depuis le haut (en %) */
-      left: 30%; /* Position horizontale gauche (en %) */
+      top: 37%;
+      left: 29%;
     }
 
     #oeil-droit {
-      top: 35%; /* Hauteur depuis le haut (en %) */
-      right: 30%; /* Position horizontale droite (en %) */
+      top: 36.3%;
+      right: 60.70%;
     }
 
-    /* Classe ajoutée par JS au clic pour illuminer */
     .phare-actif {
       opacity: 1;
-      /* Effet lumineux Intense (Halo) */
-      box-shadow: 0 0 40px 15px #fff, 0 0 70px 30px #ff0; 
+      box-shadow: 0 0 40px 15px #fff, 0 0 70px 30px #ff0;
     }
-
   </style>
 </head>
 <body>
 
-  <!-- Conteneur qui englobe tout pour l'effet de zoom -->
   <div class="conteneur-camion" id="monCamion">
-    
-    <!-- Image de la blague (de base) -->
     <img src="mablague.jpg" alt="Blague Camion" class="image-base">
     
-    <!-- Éléments superposés (Bouche et Yeux) -->
     <div class="bouche-conteneur">
       <div class="bouche" id="maBouche"></div>
     </div>
     
     <div class="oeil" id="oeil-gauche"></div>
     <div class="oeil" id="oeil-droit"></div>
-
   </div>
 
-  <!-- Fichier audio -->
   <audio id="klaxon" src="camion.mp3" preload="auto"></audio>
 
   <script>
@@ -124,41 +126,32 @@
 
     document.addEventListener('click', function() {
       const audio = document.getElementById('klaxon');
-      const camionConteneur = document.getElementById('monCamion');
+      const camion = document.getElementById('monCamion');
       const bouche = document.getElementById('maBouche');
       const oeilG = document.getElementById('oeil-gauche');
       const oeilD = document.getElementById('oeil-droit');
 
-      // Recommence le chrono s'il y en avait déjà un
+      // Si un chrono tourne, on le stoppe
       if (timer) {
         clearTimeout(timer);
-        // Retirer les classes pour le reset au re-clic immédiat
-        camionConteneur.classList.remove('zoom-clic');
-        bouche.classList.remove('bouche-ouverte');
-        oeilG.classList.remove('phare-actif');
-        oeilD.classList.remove('phare-actif');
       }
 
-      // Lance le son
+      // Rejoue le son
       audio.currentTime = 0;
       audio.play();
 
-      // AJOUTE LES EFFETS d'ANIMATION
-      // Forcer un petit délai pour permettre au navigateur de 'reset' les classes
-      setTimeout(() => {
-          camionConteneur.classList.add('zoom-clic'); // Zoom
-          bouche.classList.add('bouche-ouverte'); // Bouche
-          oeilG.classList.add('phare-actif');     // Oeil Gauche
-          oeilD.classList.add('phare-actif');     // Oeil Droit
-      }, 10);
+      // Active TOUTES les animations
+      camion.classList.add('action-clic');
+      bouche.classList.add('bouche-ouverte');
+      oeilG.classList.add('phare-actif');
+      oeilD.classList.add('phare-actif');
 
-      // ARRÊTE TOUT après 2 secondes (fin du klaxon)
+      // Arrête tout au bout de 2 secondes
       timer = setTimeout(() => {
         audio.pause();
         audio.currentTime = 0;
         
-        // Retire les effets
-        camionConteneur.classList.remove('zoom-clic');
+        camion.classList.remove('action-clic');
         bouche.classList.remove('bouche-ouverte');
         oeilG.classList.remove('phare-actif');
         oeilD.classList.remove('phare-actif');
