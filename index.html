@@ -14,42 +14,69 @@
       align-items: center;
       min-height: 100vh;
       cursor: pointer;
+      overflow: hidden;
     }
+
     img {
       max-width: 100%;
       height: auto;
       display: block;
+      transition: transform 0.2s ease;
+    }
+
+    /* Effet au survol de la souris */
+    img:hover {
+      transform: scale(1.03);
+    }
+
+    /* Animation de secousse / vibration */
+    @keyframes secousse {
+      0% { transform: scale(1.03) translate(0, 0) rotate(0deg); }
+      20% { transform: scale(1.03) translate(-3px, 3px) rotate(-1deg); }
+      40% { transform: scale(1.03) translate(-3px, -3px) rotate(1deg); }
+      60% { transform: scale(1.03) translate(3px, 3px) rotate(0deg); }
+      80% { transform: scale(1.03) translate(3px, -3px) rotate(1deg); }
+      100% { transform: scale(1.03) translate(0, 0) rotate(-1deg); }
+    }
+
+    /* Classe activée lors du clic */
+    .vibre {
+      animation: secousse 0.1s infinite;
     }
   </style>
 </head>
 <body>
 
   <!-- Image de la blague -->
-  <img src="mablague.jpg" alt="Blague Camion">
+  <img id="imageBlague" src="mablague.jpg" alt="Blague Camion">
 
   <!-- Fichier audio -->
   <audio id="klaxon" src="camion.mp3" preload="auto"></audio>
 
-<script>
+  <script>
     let timer = null;
 
-    // Joue le son à CHAQUE clic sur la page/image
     document.addEventListener('click', function() {
       const audio = document.getElementById('klaxon');
+      const img = document.getElementById('imageBlague');
 
-      // Annule le chrono d'arrêt précédent s'il y en avait un en cours
+      // Recommence le chrono s'il y en avait déjà un
       if (timer) {
         clearTimeout(timer);
       }
 
-      // Remet le son au début et le joue
+      // Lance le son
       audio.currentTime = 0;
       audio.play();
 
-      // Programme l'arrêt automatique 2 secondes après LE DERNIER clic
+      // Ajoute l'effet de vibration
+      img.classList.add('vibre');
+
+      // Arrête le son et la vibration après 2 secondes
       timer = setTimeout(() => {
         audio.pause();
         audio.currentTime = 0;
+        img.classList.remove('vibre');
       }, 2000);
     });
   </script>
