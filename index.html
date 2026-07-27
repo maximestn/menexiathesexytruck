@@ -17,79 +17,57 @@
       overflow: hidden;
     }
 
-    /* Le conteneur global */
+    /* Conteneur global */
     .conteneur-camion {
       position: relative;
       display: inline-block;
+      max-width: 100%;
       transition: transform 0.2s ease-out;
       will-change: transform;
     }
 
     /* L'image de base */
     .image-base {
-      max-width: 100%;
+      width: 100%;
+      max-width: 100vw;
       height: auto;
       display: block;
       transition: transform 0.2s ease;
     }
 
-    /* Effet survol de la souris */
+    /* Effet survol */
     .conteneur-camion:hover .image-base {
       transform: scale(1.03);
     }
 
     /* --- ANIMATION : SECOUSSE + ZOOM --- */
     @keyframes secousseEtZoom {
-      0% { transform: scale(1.2) translate(0, 0) rotate(0deg); }
-      20% { transform: scale(1.2) translate(-4px, 4px) rotate(-1deg); }
-      40% { transform: scale(1.2) translate(-4px, -4px) rotate(1deg); }
-      60% { transform: scale(1.2) translate(4px, 4px) rotate(0deg); }
-      80% { transform: scale(1.2) translate(4px, -4px) rotate(1deg); }
-      100% { transform: scale(1.2) translate(0, 0) rotate(-1deg); }
+      0% { transform: scale(1.15) translate(0, 0) rotate(0deg); }
+      20% { transform: scale(1.15) translate(-4px, 4px) rotate(-1deg); }
+      40% { transform: scale(1.15) translate(-4px, -4px) rotate(1deg); }
+      60% { transform: scale(1.15) translate(4px, 4px) rotate(0deg); }
+      80% { transform: scale(1.15) translate(4px, -4px) rotate(1deg); }
+      100% { transform: scale(1.15) translate(0, 0) rotate(-1deg); }
     }
 
-    /* Actif lors du clic */
     .action-clic {
       animation: secousseEtZoom 0.1s infinite !important;
-    }
-
-    /* --- LA BOUCHE --- */
-    .bouche-conteneur {
-      position: absolute;
-      bottom: 15%; /* À ajuster si besoin */
-      left: 50%;
-      transform: translateX(-50%);
-      width: 80px;
-      height: 40px;
-      overflow: hidden;
-    }
-
-    .bouche {
-      width: 100%;
-      height: 100%;
-      background-color: #400;
-      border: 3px solid #000;
-      border-radius: 50% / 100% 100% 0 0;
-      transition: transform 0.15s ease-out;
-      transform: scaleY(0);
-      transform-origin: top;
-    }
-
-    .bouche-ouverte {
-      transform: scaleY(1);
     }
 
     /* --- LES PHARES / YEUX --- */
     .oeil {
       position: absolute;
-      width: 25px;
-      height: 25px;
+      width: 4vw;
+      height: 4vw;
+      max-width: 25px;
+      max-height: 25px;
       border-radius: 50%;
       opacity: 0;
       transition: opacity 0.1s ease-in, box-shadow 0.2s ease-out;
+      transform: translate(-50%, -50%);
     }
 
-    /* Coordonnées ajustées */
+    /* Positions des phares */
     #oeil-gauche {
       top: 37%;
       left: 29%;
@@ -97,24 +75,21 @@
 
     #oeil-droit {
       top: 36.3%;
-      right: 60.70%;
+      left: 39.3%;
     }
 
     .phare-actif {
       opacity: 1;
-      box-shadow: 0 0 40px 15px #fff, 0 0 70px 30px #ff0;
+      box-shadow: 0 0 30px 10px #fff, 0 0 60px 20px #ff0;
     }
   </style>
 </head>
 <body>
 
   <div class="conteneur-camion" id="monCamion">
-    <img src="mablague.jpg" alt="Blague Camion" class="image-base">
+    <img src="mablague.jpg" alt="Blague Camion" class="image-base" id="imgCamion">
     
-    <div class="bouche-conteneur">
-      <div class="bouche" id="maBouche"></div>
-    </div>
-    
+    <!-- Les Yeux / Phares -->
     <div class="oeil" id="oeil-gauche"></div>
     <div class="oeil" id="oeil-droit"></div>
   </div>
@@ -127,32 +102,25 @@
     document.addEventListener('click', function() {
       const audio = document.getElementById('klaxon');
       const camion = document.getElementById('monCamion');
-      const bouche = document.getElementById('maBouche');
       const oeilG = document.getElementById('oeil-gauche');
       const oeilD = document.getElementById('oeil-droit');
 
-      // Si un chrono tourne, on le stoppe
       if (timer) {
         clearTimeout(timer);
       }
 
-      // Rejoue le son
       audio.currentTime = 0;
       audio.play();
 
-      // Active TOUTES les animations
       camion.classList.add('action-clic');
-      bouche.classList.add('bouche-ouverte');
       oeilG.classList.add('phare-actif');
       oeilD.classList.add('phare-actif');
 
-      // Arrête tout au bout de 2 secondes
       timer = setTimeout(() => {
         audio.pause();
         audio.currentTime = 0;
         
         camion.classList.remove('action-clic');
-        bouche.classList.remove('bouche-ouverte');
         oeilG.classList.remove('phare-actif');
         oeilD.classList.remove('phare-actif');
       }, 2000);
